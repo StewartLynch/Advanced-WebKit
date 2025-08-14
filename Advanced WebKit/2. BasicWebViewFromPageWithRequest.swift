@@ -15,15 +15,34 @@
 // Copyright © 2025 CreaTECH Solutions. All rights reserved.
 
 import SwiftUI
+import WebKit
 
 struct BasicWebViewFromPageWithRequest: View {
+    @State private var page = WebPage()
     var body: some View {
         NavigationStack {
             VStack() {
-                Text("Basic WebView with page and URLRequest")
+                if page.isLoading {
+                    ProgressView(value: page.estimatedProgress)
+                        .progressViewStyle(.linear)
+                        .transition(.opacity)
+                        .padding()
+                } else {
+                    Text(" ")
+                        .padding(.vertical, -10)
+                }
+                WebView(page)
+                    .ignoresSafeArea(edges: .bottom)
             }
-            .navigationTitle("Page Title")
+            .navigationTitle(page.title)
             .navigationBarTitleDisplayMode(.inline)
+        }
+        .onAppear {
+            let url = URL(string: "https://www.swift.org")
+            var request = URLRequest(url: url!)
+            request.cachePolicy = .reloadIgnoringLocalCacheData
+            page.load(request)
+//            page.load(url)
         }
     }
 }

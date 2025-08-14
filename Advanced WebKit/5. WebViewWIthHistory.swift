@@ -16,17 +16,92 @@
 
 
 import SwiftUI
-
+import WebKit
 
 struct WebViewWithHistory: View {
+    @State private var page = WebPage()
+    var backItems: [WebPage.BackForwardList.Item] {
+        page.backForwardList.backList
+    }
+    var forwardItems: [WebPage.BackForwardList.Item] {
+        page.backForwardList.forwardList
+    }
     var body: some View {
         NavigationStack {
             VStack() {
-                Text("WebView With Navigation History")
+                if page.isLoading {
+                    ProgressView(value: page.estimatedProgress)
+                        .progressViewStyle(.linear)
+                        .transition(.opacity)
+                        .padding()
+                } else {
+                    Text(" ")
+                        .padding(.vertical, -10)
+                }
+                WebView(page)
+                    .ignoresSafeArea(edges: .bottom)
             }
-            .navigationTitle("Page Title")
+            .navigationTitle(page.title)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Image(systemName: "chevron.backward")
+                        .onTapGesture {
+                            if let last = backItems.last {
+                                page.load(last)
+                            }
+                        }
+                    .disabled(backItems.isEmpty)
+                    .contextMenu {
+                        ForEach(backItems.indices.reversed(), id: \.self) { index in
+                            let item = backItems[index]
+                            Button(historyLabel(for: item)) {
+                                page.load(item)
+                            }
+                        }
+                    }
+                    Image(systemName: "chevron.forward")
+                        .onTapGesture {
+                            if let first = forwardItems.first {
+                                page.load(first)
+                            }
+                        }
+                    .disabled(forwardItems.isEmpty)
+                    .contextMenu {
+                        ForEach(forwardItems.indices, id: \.self) { index in
+                            let item = forwardItems[index]
+                            Button(historyLabel(for: item)) {
+                                page.load(item)
+                            }
+                        }
+                    }
+                    Button {
+                        page.reload()
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    Button {
+                        page.stopLoading()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .disabled(!page.isLoading)
+                }
+            }
         }
+        .onAppear {
+            let url = URL(string: "https://www.swift.org")
+            page.load(url)
+        }
+    }
+    
+    func historyLabel(for item: WebPage.BackForwardList.Item) -> String {
+        if let title = item.title?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !title.isEmpty {return title}
+        if let host = item.url.host(),
+           !host.isEmpty {return host }
+        return item.url.absoluteString
     }
 }
 

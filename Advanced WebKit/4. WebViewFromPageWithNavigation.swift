@@ -16,15 +16,69 @@
 
 
 import SwiftUI
+import WebKit
 
 struct WebViewFromPageWithNavigation: View {
+    @State private var page = WebPage()
+    var backItems: [WebPage.BackForwardList.Item] {
+        page.backForwardList.backList
+    }
+    var forwardItems: [WebPage.BackForwardList.Item] {
+        page.backForwardList.forwardList
+    }
     var body: some View {
         NavigationStack {
             VStack() {
-                Text("WebView With Navigation")
+                if page.isLoading {
+                    ProgressView(value: page.estimatedProgress)
+                        .progressViewStyle(.linear)
+                        .transition(.opacity)
+                        .padding()
+                } else {
+                    Text(" ")
+                        .padding(.vertical, -10)
+                }
+                WebView(page)
+                    .ignoresSafeArea(edges: .bottom)
             }
-            .navigationTitle("Page Title")
+            .navigationTitle(page.title)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button {
+                        if let last = backItems.last {
+                            page.load(last)
+                        }
+                    }label: {
+                        Image(systemName: "chevron.backward")
+                    }
+                    .disabled(backItems.isEmpty)
+                    Button {
+                        if let first = forwardItems.first {
+                            page.load(first)
+                        }
+                    }label: {
+                        Image(systemName: "chevron.forward")
+                    }
+                    .disabled(forwardItems.isEmpty)
+                    Button {
+                        page.reload()
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    Button {
+                        page.stopLoading()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .disabled(!page.isLoading)
+                }
+            }
+        }
+        .onAppear {
+            let url = URL(string: "https://www.swift.org")
+            page.load(url)
         }
     }
 }

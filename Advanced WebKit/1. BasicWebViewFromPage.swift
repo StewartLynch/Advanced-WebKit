@@ -16,15 +16,31 @@
 
 
 import SwiftUI
+import WebKit
 
 struct BasicWebViewFromPageWithURL: View {
+    @State private var page = WebPage()
     var body: some View {
         NavigationStack {
             VStack() {
-                Text("Basic WebView with page and URL")
+                if page.isLoading {
+                    ProgressView(value: page.estimatedProgress)
+                        .progressViewStyle(.linear)
+                        .transition(.opacity)
+                        .padding()
+                } else {
+                    Text(" ")
+                        .padding(.vertical, -10)
+                }
+                WebView(page)
+                    .ignoresSafeArea(edges: .bottom)
             }
-            .navigationTitle("Page Title")
+            .navigationTitle(page.title)
             .navigationBarTitleDisplayMode(.inline)
+        }
+        .onAppear {
+            let url = URL(string: "https://www.swift.org")
+            page.load(url)
         }
     }
 }

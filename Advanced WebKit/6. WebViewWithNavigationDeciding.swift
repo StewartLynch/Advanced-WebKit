@@ -16,16 +16,92 @@
 
 
 import SwiftUI
+import WebKit
 
 struct WebViewWithNavigationDeciding: View {
+    @State private var page = WebPage()
+    @State private var disableURL: String?
+    var backItems: [WebPage.BackForwardList.Item] {
+        page.backForwardList.backList
+    }
+    var forwardItems: [WebPage.BackForwardList.Item] {
+        page.backForwardList.forwardList
+    }
     var body: some View {
         NavigationStack {
             VStack() {
-                Text("WebView with Decided Navigation")
+                if page.isLoading {
+                    ProgressView(value: page.estimatedProgress)
+                        .progressViewStyle(.linear)
+                        .transition(.opacity)
+                        .padding()
+                } else {
+                    Text(" ")
+                        .padding(.vertical, -10)
+                }
+                WebView(page)
+                    .webViewLinkPreviews(.disabled)
+                    .ignoresSafeArea(edges: .bottom)
             }
-            .navigationTitle("Page Title")
+            .navigationTitle(page.title)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button {
+                        if let last = backItems.last {
+                            page.load(last)
+                        }
+                    }label: {
+                        Image(systemName: "chevron.backward")
+                    }
+                    .disabled(backItems.isEmpty)
+                    Button {
+                        if let first = forwardItems.first {
+                            page.load(first)
+                        }
+                    }label: {
+                        Image(systemName: "chevron.forward")
+                    }
+                    .disabled(forwardItems.isEmpty)
+                    Button {
+                        page.reload()
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    Button {
+                        page.stopLoading()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .disabled(!page.isLoading)
+                }
+            }
         }
+        .onAppear {
+            let url = URL(string: "https://www.swift.org")
+            let navigationDecider = NavigationDecider(disableURL: $disableURL)
+            page = WebPage(navigationDecider: navigationDecider)
+            page.load(url)
+        }
+        .alert("Disabled", isPresented: .constant(disableURL != nil)) {
+            Button("OK") {}
+        } message: {
+            Text("\(disableURL ?? "") is oudside of this domain.")
+        }
+
+    }
+}
+
+struct NavigationDecider: WebPage.NavigationDeciding {
+    @Binding var disableURL: String?
+    func decidePolicy(for action: WebPage.NavigationAction, preferences: inout WebPage.NavigationPreferences) async -> WKNavigationActionPolicy {
+        let url = action.request.url
+        if url?.host() == "www.swift.org" {
+            return .allow
+        }
+        disableURL = url?.host()
+        return .cancel
     }
 }
 
