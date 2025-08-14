@@ -1,0 +1,71 @@
+{
+  "fill" : {
+    "automatic-gradient" : "srgb:0.53375,1.00000,0.68517,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "image-name" : "PNG image-4699AED2310F-1.png",
+          "name" : "PNG image-4699AED2310F-1",
+          "position" : {
+            "scale" : 2.13,
+            "translation-in-points" : [
+              58.986768627673754,
+              -0.6806165610885415
+            ]
+          }
+        }
+      ],
+      "position" : {
+        "scale" : 1,
+        "translation-in-points" : [
+          7.507406916249388,
+          16.272923233298812
+        ]
+      },
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    },
+    {
+      "blend-mode" : "normal",
+      "layers" : [
+        {
+          "image-name" : "globe.badge.chevron.backward.png",
+          "name" : "globe.badge.chevron.backward",
+          "position" : {
+            "scale" : 2.07,
+            "translation-in-points" : [
+              -18.83726643820818,
+              -171.14412799735555
+            ]
+          }
+        }
+      ],
+      "position" : {
+        "scale" : 1,
+        "translation-in-points" : [
+          -45.734834546190534,
+          24.38793653097747
+        ]
+      },
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : "shared"
+  }
+}
