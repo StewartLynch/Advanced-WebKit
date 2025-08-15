@@ -46,13 +46,13 @@ struct WebViewWithHistory: View {
             .toolbar {
                 ToolbarSpacer(.flexible, placement: .bottomBar)
                 ToolbarItemGroup(placement: .bottomBar) {
-                    Image(systemName: "chevron.backward")
-                        .onTapGesture {
-                            if let last = backItems.last {
-                                page.load(last)
-                            }
+                    Button {
+                        if let last = backItems.last {
+                            page.load(last)
                         }
-                    .disabled(backItems.isEmpty)
+                    }label: {
+                        Image(systemName: "chevron.backward")
+                    }
                     .contextMenu {
                         ForEach(backItems.indices.reversed(), id: \.self) { index in
                             let item = backItems[index]
@@ -61,13 +61,14 @@ struct WebViewWithHistory: View {
                             }
                         }
                     }
-                    Image(systemName: "chevron.forward")
-                        .onTapGesture {
-                            if let first = forwardItems.first {
-                                page.load(first)
-                            }
+                    .disabled(backItems.isEmpty)
+                    Button {
+                        if let first = forwardItems.first {
+                            page.load(first)
                         }
-                    .disabled(forwardItems.isEmpty)
+                    }label: {
+                        Image(systemName: "chevron.forward")
+                    }
                     .contextMenu {
                         ForEach(forwardItems.indices, id: \.self) { index in
                             let item = forwardItems[index]
@@ -76,6 +77,7 @@ struct WebViewWithHistory: View {
                             }
                         }
                     }
+                    .disabled(forwardItems.isEmpty)
                     Button {
                         page.reload()
                     } label: {
