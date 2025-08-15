@@ -86,7 +86,7 @@ struct WebViewWithHistory: View {
                     Button {
                         page.stopLoading()
                     } label: {
-                        Image(systemName: "xmark")
+                        Image(systemName: "xmark.circle")
                     }
                     .disabled(!page.isLoading)
                 }

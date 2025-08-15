@@ -70,7 +70,7 @@ struct WebViewFromPageWithNavigation: View {
                     Button {
                         page.stopLoading()
                     } label: {
-                        Image(systemName: "xmark")
+                        Image(systemName: "xmark.circle")
                     }
                     .disabled(!page.isLoading)
                 }
