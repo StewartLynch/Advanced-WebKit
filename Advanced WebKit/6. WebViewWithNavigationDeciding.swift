@@ -87,7 +87,7 @@ struct WebViewWithNavigationDeciding: View {
         .alert("Disabled", isPresented: .constant(disableURL != nil)) {
             Button("OK") {}
         } message: {
-            Text("\(disableURL ?? "") is oudside of this domain.")
+            Text("\(disableURL ?? "") is outside of this domain.")
         }
 
     }
